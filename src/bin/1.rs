@@ -31,7 +31,7 @@ fn second(input: &str) -> u32 {
     }).sum()
 }
 
-/// aoc2022 runner
+/// aoc2023 runner
 #[derive(Parser)]
 struct Args {
    /// If set, run the day's example
