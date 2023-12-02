@@ -34,14 +34,15 @@ fn first(parsed: &Vec<Vec<HashMap<String, u32>>>) -> usize {
     }).sum()
 }
 
-// fn second(input: &str) -> u32 {
-//     let substrs2val: Vec<(usize, String)> = SDIGITS.iter().cloned().map(String::from).enumerate().chain((1..=9).map(|i| i.to_string()).enumerate()).map(|(i, substr)| (i + 1, substr)).collect();
-//     input.split('\n').filter_map(|line| {
-//         let frst_opt = substrs2val.iter().filter_map(|(val, substr)| line.find(substr).map(|pos| (pos, val))).min().map(|(_pos, val)| val.clone() as u32);
-//         let last_opt = substrs2val.iter().filter_map(|(val, substr)| line.rfind(substr).map(|pos| (pos, val))).max().map(|(_pos, val)| val.clone() as u32);
-//         concatenate_numbers(frst_opt, last_opt)
-//     }).sum()
-// }
+fn second(parsed: &Vec<Vec<HashMap<String, u32>>>) -> usize {
+    let labels: Vec<String> = ["red", "green", "blue"].into_iter().map(String::from).collect();
+    parsed.iter().map(|v| {
+        labels.iter().map(|label| match v.iter().filter_map(|map| map.get(label)).max() {
+            Some(&mx) => mx as usize,
+            None => 0,
+        }).product::<usize>()
+    }).sum()
+}
 
 /// aoc2023 runner
 #[derive(Parser)]
@@ -59,8 +60,8 @@ fn main() -> Res<()> {
     };
     let parsed = parse(&input);
     let first = first(&parsed);
-    // let second = second(input.trim());
+    let second = second(&parsed);
     println!("First: {first}");
-    // println!("Second: {second}");
+    println!("Second: {second}");
     Ok(())
 }
