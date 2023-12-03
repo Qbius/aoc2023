@@ -1,7 +1,4 @@
-use std::fs;
-use clap::Parser;
-
-type Res<T> = Result<T, Box<dyn std::error::Error>>;
+use aoc::*;
 
 const SDIGITS: [&str; 9] = ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 const EXAMPLE: &str = "
@@ -27,23 +24,4 @@ fn second(input: &str) -> usize {
     }).sum()
 }
 
-/// aoc2023 runner
-#[derive(Parser)]
-struct Args {
-   /// If set, run the day's example
-   #[arg(short, long, action)]
-   example: bool,
-}
-
-fn main() -> Res<()> {
-    let args = Args::parse();
-    let input = match args.example {
-        true => String::from(EXAMPLE),
-        false => fs::read_to_string("inputs/1.txt")?,
-    };
-    let first = first(input.trim());
-    let second = second(input.trim());
-    println!("First: {first}");
-    println!("Second: {second}");
-    Ok(())
-}
+aoc!();

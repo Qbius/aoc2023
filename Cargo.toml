@@ -5,3 +5,6 @@ edition = "2021"
 
 [dependencies]
 clap = {version = "4.0", features = ["derive"]}
+aoc_maker = {path = "./src/lib/aoc_maker"}
+reexport-proc-macro = "1.0.7"
+regex = "1.10.2"
