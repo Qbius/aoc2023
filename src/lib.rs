@@ -7,10 +7,11 @@ macro_rules! aoc {
             let example = std::env::args().find(|arg| *arg == String::from("--example") || *arg == String::from("-e")).is_some();
             let day = std::path::Path::new(file!()).file_stem()?.to_str()?;
             let input_file = format!("./inputs/{day}.txt");
-            Some(match example {
+            let input = match example {
                 true => String::from(EXAMPLE),
                 false => std::fs::read_to_string(&input_file).ok()?,
-            })
+            };
+            Some(input.trim().replace("\r", "").to_string())
         }
     };
     () => {
@@ -18,8 +19,8 @@ macro_rules! aoc {
 
         fn main() {
             let input = get_input().expect("Couldn't find input!");
-            let first = first(input.trim());
-            let second = second(input.trim());
+            let first = first(&input);
+            let second = second(&input);
             println!("First: {first}");
             println!("Second: {second}");
         }
@@ -29,8 +30,19 @@ macro_rules! aoc {
 
         fn main() {
             let input = get_input().expect("Couldn't find input!");
-            let first = first(input.trim());
+            let first = first(&input);
             println!("First: {first}");
         }
     };
+    ($fun:ident) => {
+        aoc!(@common);
+
+        fn main() {
+            let input = get_input().expect("Couldn't find input!");
+            let first = first($fun(&input));
+            let second = second($fun(&input));
+            println!("First: {first}");
+            println!("Second: {second}");
+        }
+    }
 }
