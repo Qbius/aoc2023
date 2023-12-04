@@ -60,7 +60,7 @@ impl Scratcher {
 
 fn second(woncounts: Vec<usize>) -> usize {
     let mut scratcher = Scratcher::new(woncounts);
-    scratcher.scratch_all();
+    scratcher.scratch_all()
 }
 
 aoc!(parse_cards);
