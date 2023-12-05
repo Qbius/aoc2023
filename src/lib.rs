@@ -20,8 +20,8 @@ macro_rules! aoc {
         fn main() {
             let input = get_input().expect("Couldn't find input!");
             let first = first(&input);
-            let second = second(&input);
             println!("First: {first}");
+            let second = second(&input);
             println!("Second: {second}");
         }
     };
@@ -40,8 +40,8 @@ macro_rules! aoc {
         fn main() {
             let input = get_input().expect("Couldn't find input!");
             let first = first($fun(&input));
-            let second = second($fun(&input));
             println!("First: {first}");
+            let second = second($fun(&input));
             println!("Second: {second}");
         }
     }

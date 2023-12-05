@@ -37,7 +37,7 @@ humidity-to-location map:
 
 fn first((seeds, mappings): (Vec<i64>, Vec<Vec<(i64, i64, i64)>>)) -> i64 {
     seeds.into_iter().map(|seed| mappings.iter().fold(seed, |val, segment_mappings| {
-        match segment_mappings.iter().find(|(_, sorc_start, len)| val > *sorc_start && (val - *sorc_start) < *len) {
+        match segment_mappings.iter().find(|(_, sorc_start, len)| val >= *sorc_start && (val - *sorc_start) < *len) {
             Some((dest_start, sorc_start, _)) => (dest_start - sorc_start) + val,
             None => val
         }
@@ -50,6 +50,7 @@ fn second((seeds, mappings): (Vec<i64>, Vec<Vec<(i64, i64, i64)>>)) -> i64 {
 }
 
 fn parse(input: &str) -> (Vec<i64>, Vec<Vec<(i64, i64, i64)>>) {
+    let v = vec![1, 2, 3];
     let segments: Vec<_> = input.split("\n\n").collect();
     let (first_line, rest_segments) = segments.split_first().expect("Something is wrong with the input");
     let seeds: Vec<_> = first_line[7..].split(' ').filter_map(|num| num.parse::<i64>().ok()).collect();
