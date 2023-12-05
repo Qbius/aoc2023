@@ -64,3 +64,18 @@ fn second(woncounts: Vec<usize>) -> usize {
 }
 
 aoc!(parse_cards);
+
+fn fold_input<T>(init: T, f: fn(T, usize, usize, char) -> T) -> T {
+    let all_in_symbols = |x| {
+        false
+    };
+    
+    let lines = input_lines(file!());
+    lines.into_iter().enumerate().fold(init, |y_acc, (y, line)| {
+        let (line_result, _end) = line.chars().enumerate().fold(y_acc, |x_acc_it, (x, c)| {
+            let (x_acc, mut it) = x_acc_it;
+            (f(x_acc, x, y, c), it)
+        });
+        line_result
+    })
+}
