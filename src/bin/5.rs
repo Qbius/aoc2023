@@ -50,7 +50,6 @@ fn second((seeds, mappings): (Vec<i64>, Vec<Vec<(i64, i64, i64)>>)) -> i64 {
 }
 
 fn parse(input: &str) -> (Vec<i64>, Vec<Vec<(i64, i64, i64)>>) {
-    let v = vec![1, 2, 3];
     let segments: Vec<_> = input.split("\n\n").collect();
     let (first_line, rest_segments) = segments.split_first().expect("Something is wrong with the input");
     let seeds: Vec<_> = first_line[7..].split(' ').filter_map(|num| num.parse::<i64>().ok()).collect();
