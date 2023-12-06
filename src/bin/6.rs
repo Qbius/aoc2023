@@ -5,7 +5,19 @@ Time:      7  15   30
 Distance:  9  40  200";
 
 fn first(info: Vec<(usize, usize)>) -> usize {
-    info.into_iter().map(|(time, record)| (0..=time).filter(|held| (held * (time - held)) > record).count()).product()
+    info.into_iter().map(|(time, record)| {
+        let delta = time.pow(2u32) - 4 * record;
+        match delta {
+            n if n > 0 => {
+                let x0 = (time as f64) / 2f64 - (n as f64).sqrt() / 2f64;
+                let x1 = (time as f64) / 2f64 + (n as f64).sqrt() / 2f64;
+                x1.ceil() as usize - x0.floor() as usize - 1
+            }
+            _ => {
+                0
+            }
+        }
+    }).product()
 }
 
 fn second(info: Vec<(usize, usize)>) -> usize {
