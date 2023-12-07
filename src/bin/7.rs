@@ -16,12 +16,24 @@ fn total_earnings(mut hands: Vec<Hand>) -> usize {
     hands.into_iter().enumerate().map(|(i, Hand{bid, ..})| (i + 1) * bid).sum()
 }
 
-#[derive(PartialEq, PartialOrd, Eq, Ord, Debug)]
+#[derive(PartialEq, PartialOrd, Eq, Ord)]
 struct Hand {
-    typ: usize,
+    typ: HandType,
     hand: (usize, usize, usize, usize, usize),
     bid: usize,
 }
+
+#[derive(PartialEq, PartialOrd, Eq, Ord)]
+enum HandType {
+    Nothing,
+    Pair,
+    TwoPairs,
+    ThreeOfAKind,
+    FullHouse,
+    FourOfAKind,
+    FiveOfAKind,
+}
+use HandType::*;
 
 impl Hand {
     fn new(handstr: String) -> Self {
@@ -62,18 +74,18 @@ impl Hand {
         (cards, hand, bid)
     }
 
-    fn determine_type(cards: &Vec<usize>) -> usize {
+    fn determine_type(cards: &Vec<usize>) -> HandType {
         let counts: Counter<_> = cards.iter().collect();
         let mut values: Vec<_> = counts.values().cloned().collect();
         values.sort();
         match values[..] {
-            [5] => 6,
-            [1, 4] => 5,
-            [2, 3] => 4,
-            [1, 1, 3] => 3,
-            [1, 2, 2] => 2,
-            [1, 1, 1, 2] => 1,
-            [1, 1, 1, 1, 1] => 0,
+            [5] => FiveOfAKind,
+            [1, 4] => FourOfAKind,
+            [2, 3] => FullHouse,
+            [1, 1, 3] => ThreeOfAKind,
+            [1, 2, 2] => TwoPairs,
+            [1, 1, 1, 2] => Pair,
+            [1, 1, 1, 1, 1] => Nothing,
             _ => panic!("weird hand"),
         }
     }
