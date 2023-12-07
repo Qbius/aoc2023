@@ -7,7 +7,7 @@ Distance:  9  40  200";
 #[lines]
 fn parse(lines: Vec<String>) -> Vec<(usize, usize)> {
     let [ref first, ref second] = lines[..] else { panic!("Input has more than two lines!") };
-    first.split(' ').filter_map(|num| num.parse().ok()).zip(second.split(' ').filter_map(|num| num.parse().ok())).collect()
+    Numbers::parse(first).zip(Numbers::parse(second)).collect()
 }
 
 fn first(info: Vec<(usize, usize)>) -> usize {
