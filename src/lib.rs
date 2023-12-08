@@ -3,6 +3,7 @@ use regex::Regex;
 use std::iter::Iterator;
 use std::str::FromStr;
 use std::vec::IntoIter;
+use gcd::Gcd;
 
 #[macro_export]
 macro_rules! aoc {
@@ -85,4 +86,12 @@ impl<T: FromStr + Copy> Iterator for Numbers<T> {
     fn next(&mut self) -> Option<Self::Item> {
         self.iter.next()
     }
+}
+
+pub fn gcd(a: usize, b: usize) -> usize {
+    a.gcd_euclid(b)
+}
+
+pub fn lcm(a: usize, b: usize) -> usize {
+    a * (b / gcd(a, b))
 }

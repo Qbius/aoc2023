@@ -9,3 +9,4 @@ aoc_maker = {path = "./src/lib/aoc_maker"}
 reexport-proc-macro = "1.0.7"
 regex = "1.10.2"
 counter = "0.5.7"
+gcd = "2.3.0"
