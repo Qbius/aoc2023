@@ -1,6 +1,5 @@
 use aoc::*;
 use std::collections::HashMap;
-use std::iter::Iterator;
 
 const EXAMPLE: &str = "
 LR
