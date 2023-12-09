@@ -33,8 +33,7 @@ fn find_cycle(directions: &String, nodes: &HashMap<String, (String, String)>, st
         let (i, dir) = iter.next()?;
         let key = (node.to_owned(), i % directions.len());
         if let Some(&prev) = visited.get(&key) {
-            return Some((i - prev, z.expect("no z")))
-            
+            return Some((i - prev, z.expect("no z")))   
         }
         else {
             visited.insert(key, i);
