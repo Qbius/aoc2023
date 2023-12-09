@@ -1,22 +1,19 @@
 use aoc::*;
 
-#[lines]
-fn first(ls: Vec<String>) -> i32 {
-    ls.into_iter().map(|line| {
-        let numbers: Vec<i32> = line.split(' ').filter_map(|numstr| numstr.parse::<i32>().ok()).collect();
-        let rows = create_rows(numbers);
-        rows.into_iter().filter_map(|row| row.last().cloned()).sum::<i32>()
-    }).sum()
+fn first(rows_of_rows: Vec<Vec<Vec<i32>>>) -> i32 {
+    rows_of_rows.into_iter().flat_map(|rows| rows.into_iter().filter_map(|row| row.last().cloned())).sum()
+}
+
+fn second(rows_of_rows: Vec<Vec<Vec<i32>>>) -> i32 {
+    rows_of_rows.into_iter().map(|rows| rows.into_iter().rev().fold(0, |acc, row| row.first().expect("idk") - acc)).sum()
 }
 
 #[lines]
-fn second(ls: Vec<String>) -> i32 {
+fn parse(ls: Vec<String>) -> Vec<Vec<Vec<i32>>> {
     ls.into_iter().map(|line| {
         let numbers: Vec<i32> = line.split(' ').filter_map(|numstr| numstr.parse::<i32>().ok()).collect();
-        let rows = create_rows(numbers);
-        let res = rows.into_iter().rev().fold(0, |acc, row| row.first().expect("idk") - acc);
-        res
-    }).sum()
+        create_rows(numbers)
+    }).collect()
 }
 
 fn create_rows(numbers: Vec<i32>) -> Vec<Vec<i32>> {
@@ -33,7 +30,7 @@ fn create_rows(numbers: Vec<i32>) -> Vec<Vec<i32>> {
     }
 }
 
-aoc!();
+aoc!(parse);
 
 const EXAMPLE: &str = "
 0 3 6 9 12 15
