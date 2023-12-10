@@ -20,7 +20,7 @@ fn first((directions, nodes): (String, HashMap<String, (String, String)>)) -> us
 
 fn second((directions, nodes): (String, HashMap<String, (String, String)>)) -> usize {
     let cycles: Vec<(usize, usize)> = nodes.keys().cloned().filter(|k| match k.chars().last() {Some('A') => true, _ => false}).into_iter().map(|start| find_cycle(&directions, &nodes, start).expect("No cycle no play")).collect();
-    cycles.iter().fold(1, |acc, (cycle, _)| lcm(acc, *cycle))
+    cycles.into_iter().map(|(cycle, _)| cycle).fold(1, lcm)
 }
 
 fn find_cycle(directions: &String, nodes: &HashMap<String, (String, String)>, start: String) -> Option<(usize, usize)> {
