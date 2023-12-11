@@ -95,25 +95,30 @@ fn first(gd: Grid) -> usize {
 #[grid]
 fn second(gd: Grid) -> usize {
     let mut rows = HashMap::<usize, Vec<(usize, char)>>::new();
-    Loop::new(gd).for_each(|((x, y), c)| rows.entry(y).or_default().push((x, c)));
+    Loop::new(gd).map(|(point, c)| (point, match c {'S' => 'J', c => c})).for_each(|((x, y), c)| rows.entry(y).or_default().push((x, c)));
     rows.into_iter().filter_map(|(_, xs2cs)| {
         let as_map: HashMap<_, _> = xs2cs.into_iter().collect();
         let start = as_map.keys().min()?.clone();
         let end = as_map.keys().max()?.clone();
-        let (sum, false, _) = (start..=end).fold((0, false, None), |(acc, in_loop, prevchar), i| {
-            let ch = as_map.get(&i);
-            let res = match ch {
-                Some('|') => (acc, !in_loop, prevchar),
-                Some('F') => (acc, in_loop, Some('F')),
-                Some('L') => (acc, in_loop, Some('L')),
-                Some('S') => match prevchar {Some('F') => (acc, !in_loop, None), Some('L') => (acc, in_loop, None), _ => panic!("strangle loop")},
-                Some('J') => match prevchar {Some('F') => (acc, !in_loop, None), Some('L') => (acc, in_loop, None), _ => panic!("strangle loop")},
-                Some('7') => match prevchar {Some('F') => (acc, in_loop, None), Some('L') => (acc, !in_loop, None), _ => panic!("strangle loop")},
-                Some('-') => (acc, in_loop, prevchar),
-                _ => (acc + match in_loop {true => 1, false => 0}, in_loop, prevchar),
-            };
-            res
-        }) else { panic!("strange loop") };
+        let (sum, false, _) = (start..=end).fold((0, false, None), |(acc, in_loop, prevchar), i| match as_map.get(&i) {
+            Some('|') => (acc, !in_loop, prevchar),
+            Some('-') => (acc, in_loop, prevchar),
+            Some(&c) if c == 'F' || c == 'L' => (acc, in_loop, Some(c)),
+            Some('J') => match prevchar {
+                Some('L') => (acc, in_loop, None),
+                Some('F') => (acc, !in_loop, None),
+                _ => panic!("strangle loop")
+            },
+            Some('7') => match prevchar {
+                Some('F') => (acc, in_loop, None),
+                Some('L') => (acc, !in_loop, None),
+                _ => panic!("strangle loop")
+            },
+            _ => match in_loop {
+                true => (acc + 1, in_loop, prevchar),
+                false => (acc, in_loop, prevchar),
+            },
+        }) else { panic!("ended a row in-loop") };
         Some(sum)
     }).sum()
 }
