@@ -4,35 +4,6 @@ type Grid = HashMap<(usize, usize), char>;
 
 use aoc::*;
 
-#[derive(Clone, Copy, Debug)]
-enum Direction {
-    Left,
-    Up,
-    Right,
-    Down,
-}
-use Direction::*;
-
-impl Direction {
-    fn mirror(&self) -> Self {
-        match self {
-            Left => Right,
-            Up => Down,
-            Right => Left,
-            Down => Up,
-        }
-    }
-
-    fn traverse(&self, (x, y): (usize, usize)) -> (usize, usize) {
-        match self {
-            Left => (x - 1, y),
-            Up => (x, y - 1),
-            Right => (x + 1, y),
-            Down => (x, y + 1),
-        }
-    }
-}
-
 struct Loop {
     current: char,
     prev: Direction,

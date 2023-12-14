@@ -95,3 +95,32 @@ pub fn gcd(a: usize, b: usize) -> usize {
 pub fn lcm(a: usize, b: usize) -> usize {
     a * (b / gcd(a, b))
 }
+
+#[derive(Clone, Copy, Eq, PartialEq, Hash, Debug)]
+pub enum Direction {
+    Left,
+    Up,
+    Right,
+    Down,
+}
+pub use Direction::*;
+
+impl Direction {
+    pub fn mirror(&self) -> Self {
+        match self {
+            Left => Right,
+            Up => Down,
+            Right => Left,
+            Down => Up,
+        }
+    }
+
+    pub fn traverse(&self, (x, y): (usize, usize)) -> (usize, usize) {
+        match self {
+            Left => (x - 1, y),
+            Up => (x, y - 1),
+            Right => (x + 1, y),
+            Down => (x, y + 1),
+        }
+    }
+}
