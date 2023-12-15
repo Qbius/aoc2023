@@ -1,81 +1,49 @@
-use std::collections::HashMap;
-
 use aoc::*;
 
-#[derive(Debug)]
-enum Dir {
-    Row,
-    Column,
+fn first(input: &str) -> usize {
+    input.split("\n\n").map(|s| s.split('\n').map(String::from).collect()).filter_map(score_mirror).sum()
 }
 
-fn find_mirror(lns: Vec<String>) -> Option<(usize, usize)> {
-    let first_line = lns.first()?.clone();
-    println!("{first_line}");
-    lns[1..].iter().enumerate().rev().find_map(|(mirror_i_minus_one, rev_str)| {
-        let mirror_i = mirror_i_minus_one + 1;
-        let reflection_length = 1 + mirror_i / 2;
-        if first_line == *rev_str {
-            println!("{mirror_i} {}", *rev_str);
-            match (1..=reflection_length).all(|i| lns[i] == lns[mirror_i - i]) {
-                true => Some((mirror_i, reflection_length)),
-                false => None,
-            }
-        }
-        else {
-            None
-        }
-    })
-}
-
-fn first(rowsandcolumns: Vec<(Vec<String>, Vec<String>)>) -> usize {
-    rowsandcolumns.into_iter().flat_map(|(rows, cols)| {
-        let row_count = rows.len();
-        let col_count = cols.len();
-        let reverse_rows: Vec<String> = rows.iter().cloned().rev().collect();
-        let reverse_cols: Vec<String> = cols.iter().cloned().rev().collect();
-        //let row_mirror = find_mirror(rows).map(|(_, len)| (0, len)).or_else(|| find_mirror(reverse_rows).map(|(i, len)| (row_count - i - 1, len))).map(|i| (Dir::Row, i));
-        //let col_mirror = find_mirror(cols).map(|(_, len)| (0, len)).or_else(|| find_mirror(reverse_cols).map(|(i, len)| (col_count - i - 1, len))).map(|i| (Dir::Column, i));
-        vec![
-            find_mirror(rows).map(|(_, len)| (0, len)).map(|i| (Dir::Row, i)).or(find_mirror(reverse_rows).map(|(i, len)| (row_count - i - 1, len)).map(|i| (Dir::Row, i))),
-            find_mirror(cols).map(|(_, len)| (0, len)).map(|i| (Dir::Column, i)).or(find_mirror(reverse_cols).map(|(i, len)| (col_count - i - 1, len)).map(|i| (Dir::Column, i))),
-        ].into_iter().filter_map(std::convert::identity)
-        // let res = row_mirror.or(col_mirror);
-        // res
-    }).map(|(dir, (start_i, len))| match dir {
-        Dir::Row => 100,
-        Dir::Column => 1,
-    } * (start_i + len)).sum()
-
-}
-
-fn second(rowsandcolumns: Vec<(Vec<String>, Vec<String>)>) -> i32 {
-    0
-}
-
-fn parse(input: &str) -> Vec<(Vec<String>, Vec<String>)> {
-    input.split("\n\n").filter_map(|s| {
-        let rows: Vec<String> = s.trim().split('\n').map(String::from).collect();
-        let width = rows.first()?.len();
-        let columns: Vec<String> = (0..width).map(|x| {
-            let column_chunks: Vec<String> = rows.iter().map(|row| row[x..x + 1].to_string()).collect();
-            column_chunks[..].join("")
+fn second(input: &str) -> usize {
+    input.split("\n\n").map(|s| {
+        let mdgs: Vec<Vec<String>> = s.chars().enumerate().filter(|(_, c)| *c != '\n').map(|(i, c)| {
+            let mut copy = s.to_string().clone();
+            copy.replace_range(i..i + 1, match c {'#' => ".", '.' => "#", _ => panic!("wtf")});
+            copy.split('\n').map(String::from).collect()
         }).collect();
-        Some((rows, columns))
-    }).collect()
+        let pattern: Vec<String> = s.split('\n').map(String::from).collect();
+
+        let orig_row = reflection_line(&pattern);
+        let orig_col = reflection_line(&transpose(pattern.clone()));
+        let orig_score = score_mirror(pattern.clone()).expect("wtf");
+        mdgs.into_iter().find_map(|p| score_mirror_blacklist(p, orig_score, orig_row, orig_col)).unwrap().clone()
+    }).sum()
 }
 
-aoc!(parse);
+fn score_mirror(pattern: Vec<String>) -> Option<usize> {
+    reflection_line(&pattern).map(|i| i * 100).or_else(|| reflection_line(&transpose(pattern)))
+}
+
+fn score_mirror_blacklist(pattern: Vec<String>, blacklist: usize, orig_row: Option<usize>, orig_col: Option<usize>) -> Option<usize> {
+    reflection_line_blacklist(&pattern, orig_row).map(|i| i * 100).filter(|&i| i != blacklist).or_else(|| reflection_line_blacklist(&transpose(pattern), orig_col))
+}
+
+fn reflection_line(pattern: &Vec<String>) -> Option<usize> {
+    (0..pattern.len() - 1).find(|&i| pattern[0..=i].iter().rev().zip(pattern[i + 1..pattern.len()].iter()).all(|(a, b)| *a == *b)).map(|i| i + 1)
+}
+
+fn reflection_line_blacklist(pattern: &Vec<String>, blacklist: Option<usize>) -> Option<usize> {
+    (0..pattern.len() - 1).filter(|&i| blacklist.map(|o| (o - 1) != i).unwrap_or(true)).find(|&i| pattern[0..=i].iter().rev().zip(pattern[i + 1..pattern.len()].iter()).all(|(a, b)| *a == *b)).map(|i| i + 1)
+}
+
+fn transpose(pattern: Vec<String>) -> Vec<String> {
+    let width = pattern.first().map(|s| s.len()).unwrap_or(0);
+    (0..width).map(|i| pattern.iter().filter_map(|s| s.chars().nth(i)).collect()).collect()
+}
+
+aoc!();
 
 const EXAMPLE: &str = "
-#....#..#
-..##..###
-#####.##.
-#####.##.
-..##..###
-#....#..#
-#...##..#";
-
-const _EXAMPLE: &str = "
 #.##..##.
 ..#.##.#.
 ##......#
