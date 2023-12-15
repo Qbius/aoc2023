@@ -1,4 +1,4 @@
-use std::{collections::HashMap, mem::replace};
+use std::collections::HashMap;
 
 use aoc::*;
 
