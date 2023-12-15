@@ -11,21 +11,10 @@ fn second(input: &str) -> usize {
     input.split(',').for_each(|s| {
         let (label, value_perhaps) = s.split_once('=').or(s.split_once('-')).expect("wtf");
         let entry = lens.entry(hash(label)).or_default();
-        match value_perhaps {
-            "" => {
-                *entry = entry.iter().cloned().filter(|(its_label, _)| *its_label != label).collect();
-            }
-            value => {
-                let val = value.parse().expect("wtf");
-                match entry.iter().position(|(its_label, _)| *its_label == label) {
-                    Some(i) => {
-                        entry[i] = (label, val);
-                    }
-                    None => {
-                        entry.push((label, val));
-                    }
-                }
-            }
+        match (value_perhaps.parse().ok(), entry.iter().position(|(its_label, _)| *its_label == label)) {
+            (None, _) => *entry = entry.iter().cloned().filter(|(its_label, _)| *its_label != label).collect(),
+            (Some(val), Some(i)) => entry[i] = (label, val),
+            (Some(val), None) => entry.push((label, val)),
         }
     });
     lens.into_iter().map(|(boxn, lenss)| lenss.into_iter().enumerate().map(|(i, (_, n))| (boxn + 1) * (i + 1) * n).sum::<usize>()).sum()
