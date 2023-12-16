@@ -1,5 +1,6 @@
 pub use aoc_maker::*;
 use regex::Regex;
+use std::collections::HashMap;
 use std::iter::Iterator;
 use std::str::FromStr;
 use std::vec::IntoIter;
@@ -122,5 +123,21 @@ impl Direction {
             Right => (x + 1, y),
             Down => (x, y + 1),
         }
+    }
+}
+
+pub trait Grid {
+    fn xmax(&self) -> usize;
+    fn ymax(&self) -> usize;
+}
+
+impl<T> Grid for HashMap<(usize, usize), T> {
+    fn xmax(&self) -> usize {
+        let (xs, _): (Vec<_>, Vec<_>) = self.keys().cloned().unzip();
+        xs.into_iter().max().expect("Grid is empty")
+    }
+    fn ymax(&self) -> usize {
+        let (_, ys): (Vec<_>, Vec<_>) = self.keys().cloned().unzip();
+        ys.into_iter().max().expect("Grid is empty")
     }
 }
