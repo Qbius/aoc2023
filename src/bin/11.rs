@@ -12,11 +12,8 @@ fn second(gd: HashMap<(usize, usize), char>) -> i128 {
 }
 
 fn parse(gd: HashMap<(usize, usize), char>, offset_coeff: i128) -> Vec<(i128, i128)> {
-    let (xs, ys): (Vec<usize>, Vec<usize>) = gd.keys().cloned().unzip();
-    let xmax: usize = xs.into_iter().max().expect("empty grid");
-    let ymax: usize = ys.into_iter().max().expect("empty grid");
-    let empty_rows: Vec<usize> = (0..=ymax).filter(|&y| (0..=xmax).filter_map(|x| gd.get(&(x, y))).all(|&c| c == '.')).collect();
-    let empty_cols: Vec<usize> = (0..=xmax).filter(|&x| (0..=ymax).filter_map(|y| gd.get(&(x, y))).all(|&c| c == '.')).collect();
+    let empty_rows: Vec<usize> = (0..=gd.ymax()).filter(|&y| (0..=gd.xmax()).filter_map(|x| gd.get(&(x, y))).all(|&c| c == '.')).collect();
+    let empty_cols: Vec<usize> = (0..=gd.xmax()).filter(|&x| (0..=gd.ymax()).filter_map(|y| gd.get(&(x, y))).all(|&c| c == '.')).collect();
     gd.into_iter().filter(|(_, c)| *c == '#').map(|((x, y), _)| {
         let x_offset = empty_cols.iter().filter(|&&col| col < x).count() as i128 * (offset_coeff - 1);
         let y_offset = empty_rows.iter().filter(|&&row| row < y).count() as i128 * (offset_coeff - 1);

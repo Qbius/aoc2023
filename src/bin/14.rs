@@ -67,10 +67,7 @@ aoc!(parse);
 fn parse(gd: HashMap<(usize, usize), char>) -> (Vec<(usize, usize)>, Vec<(usize, usize)>, usize, usize) {
     let rounds: Vec<(usize, usize)> = gd.iter().filter(|(_point, c)| **c == 'O').map(|(point, _c)| *point).collect();
     let statics: Vec<(usize, usize)> = gd.iter().filter(|(_point, c)| **c == '#').map(|(point, _c)| *point).collect();
-    let (xs, ys): (Vec<_>, Vec<_>) = gd.keys().cloned().unzip();
-    let xmax = xs.into_iter().max().expect("empty input");
-    let ymax = ys.into_iter().max().expect("empty input");
-    (rounds, statics, xmax, ymax)
+    (rounds, statics, gd.xmax(), gd.ymax())
 }
 
 const EXAMPLE: &str = "
