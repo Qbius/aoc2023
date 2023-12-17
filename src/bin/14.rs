@@ -10,7 +10,7 @@ fn first((rounds, statics, xmax, ymax): (Vec<(usize, usize)>, Vec<(usize, usize)
 
 fn second((rounds, statics, xmax, ymax): (Vec<(usize, usize)>, Vec<(usize, usize)>, usize, usize)) -> usize {
     let (start, end, new_rounds) = find_repeat(rounds, &statics, xmax, ymax);
-    let remaining_cycles = (1000000000 - start) % (end - start);
+    let remaining_cycles = 1000000000;//(1000000000 - start) % (end - start);
     let end_rounds = (0..remaining_cycles).fold(new_rounds, |rs, _| cycle(rs, &statics, xmax, ymax));
     let height = ymax + 1;
     end_rounds.into_iter().map(|(_, y)| height - y).sum()
@@ -65,9 +65,7 @@ aoc!(parse);
 
 #[grid]
 fn parse(gd: HashMap<(usize, usize), char>) -> (Vec<(usize, usize)>, Vec<(usize, usize)>, usize, usize) {
-    let rounds: Vec<(usize, usize)> = gd.iter().filter(|(_point, c)| **c == 'O').map(|(point, _c)| *point).collect();
-    let statics: Vec<(usize, usize)> = gd.iter().filter(|(_point, c)| **c == '#').map(|(point, _c)| *point).collect();
-    (rounds, statics, gd.xmax(), gd.ymax())
+    (gd.points('O'), gd.points('#'), gd.xmax(), gd.ymax())
 }
 
 const EXAMPLE: &str = "
