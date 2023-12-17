@@ -25,10 +25,12 @@ macro_rules! aoc {
 
         fn main() {
             let input = get_input().expect("Couldn't find input!");
+            let now1 = std::time::SystemTime::now();
             let first = first(&input);
-            println!("First: {first}");
+            println!("First: {first} (elapsed: {:?})", now1.elapsed().unwrap());
+            let now2 = std::time::SystemTime::now();
             let second = second(&input);
-            println!("Second: {second}");
+            println!("Second: {second} (elapsed: {:?})", now2.elapsed().unwrap());
         }
     };
     (part1) => {
@@ -36,8 +38,9 @@ macro_rules! aoc {
 
         fn main() {
             let input = get_input().expect("Couldn't find input!");
+            let now1 = std::time::SystemTime::now();
             let first = first(&input);
-            println!("First: {first}");
+            println!("First: {first} (elapsed: {:?})", now1.elapsed().unwrap());
         }
     };
     ($fun:ident) => {
@@ -45,10 +48,12 @@ macro_rules! aoc {
 
         fn main() {
             let input = get_input().expect("Couldn't find input!");
+            let now1 = std::time::SystemTime::now();
             let first = first($fun(&input));
-            println!("First: {first}");
+            println!("First: {first} (elapsed: {:?})", now1.elapsed().unwrap());
+            let now2 = std::time::SystemTime::now();
             let second = second($fun(&input));
-            println!("Second: {second}");
+            println!("Second: {second} (elapsed: {:?})", now2.elapsed().unwrap());
         }
     }
 }
@@ -131,7 +136,7 @@ pub trait Grid {
     fn ymax(&self) -> usize;
 }
 
-impl<T> Grid for HashMap<(usize, usize), T> {
+impl<T: Copy> Grid for HashMap<(usize, usize), T> {
     fn xmax(&self) -> usize {
         let (xs, _): (Vec<_>, Vec<_>) = self.keys().cloned().unzip();
         xs.into_iter().max().expect("Grid is empty")
@@ -139,5 +144,19 @@ impl<T> Grid for HashMap<(usize, usize), T> {
     fn ymax(&self) -> usize {
         let (_, ys): (Vec<_>, Vec<_>) = self.keys().cloned().unzip();
         ys.into_iter().max().expect("Grid is empty")
+    }
+}
+
+pub trait GetPointsable {
+    type Value: Copy + PartialEq;
+
+    fn points(&self, v: Self::Value) -> Vec<(usize, usize)>;
+}
+
+impl<T: Copy + PartialEq> GetPointsable for HashMap<(usize, usize), T> {
+    type Value = T;
+
+    fn points(&self, v: Self::Value) -> Vec<(usize, usize)> {
+        self.iter().filter(|(_point, sv)| **sv == v).map(|(point, _c)| *point).collect()
     }
 }
