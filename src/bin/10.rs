@@ -65,33 +65,8 @@ fn first(gd: Grid) -> usize {
 
 #[grid]
 fn second(gd: Grid) -> usize {
-    let mut rows = HashMap::<usize, Vec<(usize, char)>>::new();
-    Loop::new(gd).map(|(point, c)| (point, match c {'S' => 'J', c => c})).for_each(|((x, y), c)| rows.entry(y).or_default().push((x, c)));
-    rows.into_iter().filter_map(|(_, xs2cs)| {
-        let as_map: HashMap<_, _> = xs2cs.into_iter().collect();
-        let start = as_map.keys().min()?.clone();
-        let end = as_map.keys().max()?.clone();
-        let (sum, false, _) = (start..=end).fold((0, false, None), |(acc, in_loop, prevchar), i| match as_map.get(&i) {
-            Some('|') => (acc, !in_loop, prevchar),
-            Some('-') => (acc, in_loop, prevchar),
-            Some(&c) if c == 'F' || c == 'L' => (acc, in_loop, Some(c)),
-            Some('J') => match prevchar {
-                Some('L') => (acc, in_loop, None),
-                Some('F') => (acc, !in_loop, None),
-                _ => panic!("strangle loop")
-            },
-            Some('7') => match prevchar {
-                Some('F') => (acc, in_loop, None),
-                Some('L') => (acc, !in_loop, None),
-                _ => panic!("strangle loop")
-            },
-            _ => match in_loop {
-                true => (acc + 1, in_loop, prevchar),
-                false => (acc, in_loop, prevchar),
-            },
-        }) else { panic!("ended a row in-loop") };
-        Some(sum)
-    }).sum()
+    let vertices: Vec<(usize, usize)> = Loop::new(gd.clone()).filter_map(|(point, c)| match c {'S' | 'J' | 'L' | '7' | 'F' => Some(point), _ => None}).collect();
+    area(vertices) - Loop::new(gd).count()
 }
 
 const EXAMPLE: &str = "
