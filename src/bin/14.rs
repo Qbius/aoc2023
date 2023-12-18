@@ -10,7 +10,7 @@ fn first((rounds, statics, xmax, ymax): (Vec<(usize, usize)>, Vec<(usize, usize)
 
 fn second((rounds, statics, xmax, ymax): (Vec<(usize, usize)>, Vec<(usize, usize)>, usize, usize)) -> usize {
     let (start, end, new_rounds) = find_repeat(rounds, &statics, xmax, ymax);
-    let remaining_cycles = 1000000000;//(1000000000 - start) % (end - start);
+    let remaining_cycles = (1000000000 - start) % (end - start);
     let end_rounds = (0..remaining_cycles).fold(new_rounds, |rs, _| cycle(rs, &statics, xmax, ymax));
     let height = ymax + 1;
     end_rounds.into_iter().map(|(_, y)| height - y).sum()
