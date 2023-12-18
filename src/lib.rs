@@ -5,6 +5,7 @@ use std::iter::Iterator;
 use std::str::FromStr;
 use std::vec::IntoIter;
 use gcd::Gcd;
+use itertools::Itertools;
 
 #[macro_export]
 macro_rules! aoc {
@@ -102,7 +103,7 @@ pub fn lcm(a: usize, b: usize) -> usize {
     a * (b / gcd(a, b))
 }
 
-#[derive(Clone, Copy, Eq, PartialEq, Hash, Debug)]
+#[derive(Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash, Debug)]
 pub enum Direction {
     Left,
     Up,
@@ -112,6 +113,16 @@ pub enum Direction {
 pub use Direction::*;
 
 impl Direction {
+    pub fn from_char(c: char) -> Self {
+        match c {
+            'L' => Left,
+            'U' => Up,
+            'R' => Right,
+            'D' => Down,
+            other => panic!("unrecognizable direction char {other}"),
+        }
+    }
+
     pub fn mirror(&self) -> Self {
         match self {
             Left => Right,
@@ -128,6 +139,23 @@ impl Direction {
             Right => (x + 1, y),
             Down => (x, y + 1),
         }
+    }
+
+    pub fn traverse_n(&self, point: (usize, usize), n: usize) -> (usize, usize) {
+        (0..n).fold(point, |acc, _| self.traverse(acc))
+    }
+
+    pub fn itraverse(&self, (x, y): (isize, isize)) -> (isize, isize) {
+        match self {
+            Left => (x - 1, y),
+            Up => (x, y - 1),
+            Right => (x + 1, y),
+            Down => (x, y + 1),
+        }
+    }
+
+    pub fn itraverse_n(&self, point: (isize, isize), n: isize) -> (isize, isize) {
+        (0..n).fold(point, |acc, _| self.itraverse(acc))
     }
 }
 
@@ -159,4 +187,14 @@ impl<T: Copy + PartialEq> GetPointsable for HashMap<(usize, usize), T> {
     fn points(&self, v: Self::Value) -> Vec<(usize, usize)> {
         self.iter().filter(|(_point, sv)| **sv == v).map(|(point, _c)| *point).collect()
     }
+}
+
+pub fn area(vertices: Vec<(usize, usize)>) -> usize {
+    let payload: isize = vertices.into_iter().tuple_windows().map(|((x1, y1), (x2, y2))| ((x1 as isize, y1 as isize), (x2 as isize, y2 as isize))).map(|((x1, y1), (x2, y2))| (x1 * y2) - (x2 * y1) + x1.abs_diff(x2) as isize + y1.abs_diff(y2) as isize).sum();
+    payload as usize / 2 + 1
+}
+
+pub fn iarea(vertices: Vec<(isize, isize)>) -> usize {
+    let payload: isize = vertices.into_iter().tuple_windows().map(|((x1, y1), (x2, y2))| (x1 * y2) - (x2 * y1) + x1.abs_diff(x2) as isize + y1.abs_diff(y2) as isize).sum();
+    payload as usize / 2 + 1
 }
