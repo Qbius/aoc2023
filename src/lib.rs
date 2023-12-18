@@ -189,12 +189,28 @@ impl<T: Copy + PartialEq> GetPointsable for HashMap<(usize, usize), T> {
     }
 }
 
-pub fn area(vertices: Vec<(usize, usize)>) -> usize {
-    let payload: isize = vertices.into_iter().tuple_windows().map(|((x1, y1), (x2, y2))| ((x1 as isize, y1 as isize), (x2 as isize, y2 as isize))).map(|((x1, y1), (x2, y2))| (x1 * y2) - (x2 * y1) + x1.abs_diff(x2) as isize + y1.abs_diff(y2) as isize).sum();
-    payload as usize / 2 + 1
+pub fn area(mut vertices: Vec<(usize, usize)>) -> usize {
+    match vertices.first() {
+        Some(&first_vertex) => {
+            vertices.push(first_vertex);
+            let payload: isize = vertices.into_iter().tuple_windows().map(|((x1, y1), (x2, y2))| ((x1 as isize, y1 as isize), (x2 as isize, y2 as isize))).map(|((x1, y1), (x2, y2))| (x1 * y2) - (x2 * y1) + x1.abs_diff(x2) as isize + y1.abs_diff(y2) as isize).sum();
+            payload as usize / 2 + 1
+        }
+        None => {
+            0
+        }
+    }
 }
 
-pub fn iarea(vertices: Vec<(isize, isize)>) -> usize {
-    let payload: isize = vertices.into_iter().tuple_windows().map(|((x1, y1), (x2, y2))| (x1 * y2) - (x2 * y1) + x1.abs_diff(x2) as isize + y1.abs_diff(y2) as isize).sum();
-    payload as usize / 2 + 1
+pub fn iarea(mut vertices: Vec<(isize, isize)>) -> usize {
+    match vertices.first() {
+        Some(&first_vertex) => {
+            vertices.push(first_vertex);
+            let payload: isize = vertices.into_iter().tuple_windows().map(|((x1, y1), (x2, y2))| (x1 * y2) - (x2 * y1) + x1.abs_diff(x2) as isize + y1.abs_diff(y2) as isize).sum();
+            payload as usize / 2 + 1
+        }
+        None => {
+            0
+        }
+    }
 }

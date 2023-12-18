@@ -2,11 +2,11 @@ use aoc::*;
 
 #[lines]
 fn first(ls: Vec<String>) -> usize {
-    let vertices = ls.into_iter().fold(vec![(0isize, 0isize)], |mut verts, line| match line.split(' ').collect::<Vec<_>>()[..] {
+    let vertices: Vec<(isize, isize)> = ls.into_iter().fold(Vec::new(), |mut verts, line| match line.split(' ').collect::<Vec<_>>()[..] {
         [dir_str, magnitude_str, _] => {
             let dir = Direction::from_char(dir_str.chars().nth(0).expect("weird dir"));
             let magnitude = magnitude_str.parse::<isize>().expect("weird magnitude");
-            let last_point = verts.last().unwrap().clone();
+            let last_point = verts.last().cloned().unwrap_or((0, 0));
             let vertex = dir.itraverse_n(last_point, magnitude);
             verts.push(vertex);
             verts
@@ -20,11 +20,11 @@ fn first(ls: Vec<String>) -> usize {
 
 #[lines]
 fn second(ls: Vec<String>) -> usize {
-    let vertices = ls.into_iter().fold(vec![(0isize, 0isize)], |mut verts, line| match line.split(' ').collect::<Vec<_>>()[..] {
+    let vertices: Vec<(isize, isize)> = ls.into_iter().fold(Vec::new(), |mut verts, line| match line.split(' ').collect::<Vec<_>>()[..] {
         [_, _, color_str] => {
             let dir = Direction::from_char(['R', 'D', 'L', 'U'][color_str.chars().nth(7).and_then(|c| c.to_digit(10)).unwrap() as usize]);
             let magnitude = isize::from_str_radix(&color_str[2..7], 16).unwrap();
-            let last_point = verts.last().unwrap().clone();
+            let last_point = verts.last().cloned().unwrap_or((0, 0));
             let vertex = dir.itraverse_n(last_point, magnitude);
             verts.push(vertex);
             verts
