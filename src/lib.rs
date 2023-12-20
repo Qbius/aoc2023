@@ -5,7 +5,8 @@ use std::iter::Iterator;
 use std::str::FromStr;
 use std::vec::IntoIter;
 use gcd::Gcd;
-use itertools::Itertools;
+pub use itertools::Itertools;
+pub use std::convert::identity;
 
 #[macro_export]
 macro_rules! aoc {
